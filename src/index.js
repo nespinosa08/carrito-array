@@ -12,24 +12,22 @@ const templateFooter = document.getElementById('template-footer').content;
 
 const fragment = document.createDocumentFragment();
 
-//const producto = {};
-let cont=0;
-let carrito={};
-
 let arrayCarrito =[];
 
 document.addEventListener('DOMContentLoaded', ()=>{
     fetchData();
     
+    if (localStorage.getItem('localstoragecarrito')){
+        arrayCarrito = JSON.parse(localStorage.getItem('localstoragecarrito'))
+        pintarArrayCarritoBody(arrayCarrito);
+    }
+    pintarArrayFooter();
 })
 
 fichas.addEventListener('click', (e)=>{
     //console.log(e.target);
     addToCar(e);
-
-    
 })
-
 
 //const apiUrl = 'https://pokeapi.co/api/v2/pokemon/ditto';
 //const apiUrl = 'https://api.chucknorris.io/jokes/random';
@@ -50,7 +48,6 @@ const fetchData = async () =>{
 
 const pintarElement = (data)=>{
     //console.log(data);
-    
     data.forEach(data =>{
         templateCard.querySelector('.name').textContent = data.name;
         templateCard.querySelector('.address').textContent = data.address.street;
@@ -64,19 +61,16 @@ const pintarElement = (data)=>{
         const clone = templateCard.cloneNode(true);
         fragment.append(clone);
     })
-
     fichas.append(fragment);
-
 }
 
 const addToCar = (e) =>{
 //console.log(e.target);
 if (e.target.classList.contains('btn')){
-    cont++;
-    
+      
     const objeto = e.target.parentElement;
     //console.log(objeto);
-//usar clase para crear nuevos objetos en el carrito
+    //usar clase para crear nuevos objetos en el carrito
     const id = objeto.querySelector('.btn').getAttribute('data-id');
     const name = objeto.querySelector('.name').textContent;
     const salary = objeto.querySelector('.salary').textContent;
@@ -93,30 +87,24 @@ if (e.target.classList.contains('btn')){
     if (arrayCarrito.length === 0){
         arrayCarrito.push(elemCarrito);
 
-    }else if ( arrayCarrito.some(elem => elem.id === elemCarrito.id) ){
+        }else if ( arrayCarrito.some(elem => elem.id === elemCarrito.id) ){
         const index = arrayCarrito.findIndex(elem =>elem.id === elemCarrito.id);
         arrayCarrito[index].cant++
 
-    } else {
+        } else {
         arrayCarrito.push(elemCarrito);
-
+        }   
     }
-    
-}
-//console.log(arrayCarrito);
 
-e.stopPropagation();
-pintarArrayCarritoBody(arrayCarrito);
-pintarArrayFooter();
+    e.stopPropagation();
+    pintarArrayCarritoBody(arrayCarrito);
+    pintarArrayFooter();
+    localStorage.setItem('localstoragecarrito', JSON.stringify(arrayCarrito));
 
 }
-
-
-
 
 const pintarArrayCarritoBody = (arrayCarrito)=>{
     //console.log(arrayCarrito);
-    
     carritoBody.innerHTML = '';
 
     arrayCarrito.forEach(elem =>{
@@ -130,13 +118,9 @@ const pintarArrayCarritoBody = (arrayCarrito)=>{
 
         const clone = templateCarrito.cloneNode(true);
         fragment.append(clone);
-
     })
     carritoBody.append(fragment);
-
-
 }
-
 
 const pintarArrayFooter = ()=>{
     carritoFooter.innerHTML = '';
@@ -165,17 +149,14 @@ const pintarArrayFooter = ()=>{
             arrayCarrito = [];
             pintarArrayFooter();
             pintarArrayCarritoBody(arrayCarrito);
+            localStorage.setItem('localstoragecarrito', JSON.stringify(arrayCarrito));
         })
     }     
-
 }
 
 
-pintarArrayFooter();
-
 carritoBody.addEventListener('click', (e)=>{
     //console.log(e.target.getAttribute('data-id'));
-
     
     if (e.target.classList.contains('btn-danger')){
         
@@ -187,13 +168,9 @@ carritoBody.addEventListener('click', (e)=>{
             arrayCarrito.splice([index], 1);
         }
         //console.log(arrayCarrito[index].cant)
-       
         }
-               
     }
-
-
-    
+   
     if (e.target.classList.contains('btn-info')){
 
         if (arrayCarrito.some(elem => elem.id === e.target.getAttribute('data-id'))){
@@ -201,14 +178,11 @@ carritoBody.addEventListener('click', (e)=>{
             arrayCarrito[index].cant++;
             //console.log(arrayCarrito[index].cant)
             }
-
-    }
-    
-   
-
+    }  
     pintarArrayFooter();
     pintarArrayCarritoBody(arrayCarrito);
 
+    localStorage.setItem('localstoragecarrito', JSON.stringify(arrayCarrito));
     e.stopPropagation();
 
 })

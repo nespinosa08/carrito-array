@@ -8,3 +8,4 @@ export class NuevoElementoCarrito {
         this.salary = salary;
     }
 }
+
